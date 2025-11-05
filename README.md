@@ -1,6 +1,6 @@
 # payload-posthog-analytics
 
-A comprehensive analytics dashboard plugin for Payload CMS with PostHog integration. Adds a beautiful analytics view to your Payload admin panel with visitor stats, page views, traffic sources, and custom events.
+A simple (for now!) analytics dashboard plugin for Payload CMS with PostHog integration. Adds an analytics view to your Payload admin panel with visitor stats, page views, traffic sources, and custom events.
 
 ## Features
 
@@ -197,11 +197,3 @@ import type {
 ## Contributing
 
 Contributions are welcome! Please open an issue or pull request.
-
-## License
-
-MIT
-
-## Credits
-
-Built for Payload CMS with ❤️
