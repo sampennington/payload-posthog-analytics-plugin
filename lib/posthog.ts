@@ -1,4 +1,4 @@
-import { createPostHogAPIClient } from './posthog-api-client'
+import { createPostHogClient } from './posthog-api-client'
 import type {
   TimePeriodData,
   PageData,
@@ -31,13 +31,14 @@ export type {
 
 
 export async function getPostHogData(period: TimePeriod = '7d'): Promise<PostHogData | null> {
-  const client = createPostHogAPIClient()
-  const dateRange = getDateRange(period)
-  const previousRange = getPreviousPeriodRange(period)
+  const client = createPostHogClient()
 
   if (!client) {
     return null
   }
+
+  const dateRange = getDateRange(period)
+  const previousRange = getPreviousPeriodRange(period)
 
   try {
     const interval = period === 'day' ? 'hour' : period === '12mo' ? 'month' : 'day'
@@ -59,8 +60,6 @@ export async function getPostHogData(period: TimePeriod = '7d'): Promise<PostHog
       client.getVisitorsTrend(previousRange, interval),
       client.getPageviewsTotal(previousRange),
     ])
-
-    console.log({ visitorsData, pageViewsData, topPagesData, sourcesData, eventsData })
 
     const timeseries = parseTimeseries(visitorsData)
     const totalVisitors = getTotalVisitors(timeseries)

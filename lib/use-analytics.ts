@@ -32,7 +32,6 @@ export const useAnalytics = (options: UseAnalyticsOptions = {}): UseAnalyticsRes
         throw new Error('Failed to fetch analytics data')
       }
       const analyticsData = await response.json()
-      console.log({analyticsData})
       setData(analyticsData)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'An error occurred')

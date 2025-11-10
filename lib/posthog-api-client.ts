@@ -1,10 +1,3 @@
-/**
- * PostHog API Client
- *
- * A clean wrapper around PostHog's REST API for querying analytics data.
- * Note: The posthog-node SDK doesn't support analytics queries, only event capture.
- */
-
 import type {
   PostHogConfig,
   DateRange,
@@ -13,24 +6,34 @@ import type {
   PostHogEventsResponse,
 } from './posthog.types'
 
-export class PostHogAPIClient {
-  private config: PostHogConfig
+export function createPostHogConfig(): PostHogConfig {
+  const apiKey = process.env.POSTHOG_API_KEY
+  const projectId = process.env.POSTHOG_PROJECT_ID
+  const apiHost = process.env.POSTHOG_API_HOST || 'https://app.posthog.com'
 
-  constructor(config: PostHogConfig) {
-    this.config = config
+  if (!apiKey || !projectId) {
+    throw new Error('PostHog not configured. Please add POSTHOG_API_KEY and POSTHOG_PROJECT_ID to your .env file.')
   }
 
-  private get headers() {
-    return {
-      Authorization: `Bearer ${this.config.apiKey}`,
-      'Content-Type': 'application/json',
-    }
+  return {
+    apiKey,
+    projectId,
+    apiHost,
   }
+}
 
-  /**
-   * Fetch trend data (timeseries) from PostHog
-   */
-  async getTrend(query: TrendQuery): Promise<PostHogTrendResponse | null> {
+function createHeaders(apiKey: string): HeadersInit {
+  return {
+    Authorization: `Bearer ${apiKey}`,
+    'Content-Type': 'application/json',
+  }
+}
+
+
+export function createPostHogClient(providedConfig?: PostHogConfig | null) {
+  const config = providedConfig ?? createPostHogConfig()
+
+  async function getTrend(query: TrendQuery): Promise<PostHogTrendResponse | null> {
     const apiQuery = {
       events: query.events,
       date_from: query.dateFrom,
@@ -40,12 +43,12 @@ export class PostHogAPIClient {
     }
 
     const response = await fetch(
-      `${this.config.apiHost}/api/projects/${this.config.projectId}/insights/trend/`,
+      `${config.apiHost}/api/projects/${config.projectId}/insights/trend/`,
       {
         method: 'POST',
-        headers: this.headers,
+        headers: createHeaders(config.apiKey),
         body: JSON.stringify(apiQuery),
-        next: { revalidate: 300 },
+        ...(typeof (globalThis as any).EdgeRuntime !== 'undefined' && { next: { revalidate: 300 } }),
       },
     )
 
@@ -57,62 +60,46 @@ export class PostHogAPIClient {
     return response.json() as Promise<PostHogTrendResponse>
   }
 
-  /**
-   * Fetch unique visitors over time (Daily Active Users)
-   */
-  async getVisitorsTrend(
+  async function getVisitorsTrend(
     dateRange: DateRange,
     interval: 'hour' | 'day' | 'week' | 'month',
   ): Promise<PostHogTrendResponse | null> {
-    return this.getTrend({
+    return getTrend({
       events: [{ id: '$pageview', math: 'dau' }],
       ...dateRange,
       interval,
     })
   }
 
-  /**
-   * Fetch total pageview count
-   */
-  async getPageviewsTotal(dateRange: DateRange): Promise<PostHogTrendResponse | null> {
-    return this.getTrend({
+  async function getPageviewsTotal(dateRange: DateRange): Promise<PostHogTrendResponse | null> {
+    return getTrend({
       events: [{ id: '$pageview', math: 'total' }],
       ...dateRange,
     })
   }
 
-  /**
-   * Fetch top pages breakdown
-   */
-  async getTopPages(dateRange: DateRange): Promise<PostHogTrendResponse | null> {
-    return this.getTrend({
+  async function getTopPages(dateRange: DateRange): Promise<PostHogTrendResponse | null> {
+    return getTrend({
       events: [{ id: '$pageview' }],
       breakdown: '$current_url',
       ...dateRange,
     })
   }
 
-  /**
-   * Fetch traffic sources breakdown
-   */
-  async getTrafficSources(dateRange: DateRange): Promise<PostHogTrendResponse | null> {
-    return this.getTrend({
+  async function getTrafficSources(dateRange: DateRange): Promise<PostHogTrendResponse | null> {
+    return getTrend({
       events: [{ id: '$pageview' }],
       breakdown: '$referrer',
       ...dateRange,
     })
   }
 
-  /**
-   * Fetch custom events
-   */
-  async getEvents(): Promise<PostHogEventsResponse | null> {
+  async function getEvents(): Promise<PostHogEventsResponse | null> {
     const response = await fetch(
-      `${this.config.apiHost}/api/projects/${this.config.projectId}/events/`,
+      `${config.apiHost}/api/projects/${config.projectId}/events/`,
       {
         method: 'GET',
-        headers: this.headers,
-        next: { revalidate: 300 },
+        headers: createHeaders(config.apiKey),
       },
     )
 
@@ -123,26 +110,13 @@ export class PostHogAPIClient {
 
     return response.json() as Promise<PostHogEventsResponse>
   }
-}
 
-/**
- * Create a PostHog API client instance
- */
-export function createPostHogAPIClient(): PostHogAPIClient | null {
-  const apiKey = process.env.POSTHOG_API_KEY
-  const projectId = process.env.POSTHOG_PROJECT_ID
-  const apiHost = process.env.POSTHOG_API_HOST || 'https://app.posthog.com'
-
-  if (!apiKey || !projectId) {
-    console.error(
-      'PostHog not configured. Please add POSTHOG_API_KEY and POSTHOG_PROJECT_ID to your .env file.',
-    )
-    return null
+  return {
+    getTrend,
+    getVisitorsTrend,
+    getPageviewsTotal,
+    getTopPages,
+    getTrafficSources,
+    getEvents,
   }
-
-  return new PostHogAPIClient({
-    apiKey,
-    projectId,
-    apiHost,
-  })
 }
