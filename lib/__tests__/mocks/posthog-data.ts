@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import type { PostHogTrendResponse, PostHogEventsResponse } from '../../posthog.types'
+import type { PostHogTrendResponse, PostHogEventsResponse, PostHogData } from '../../posthog.types'
 
 const API_HOST = 'https://app.posthog.com'
 const PROJECT_ID = 'test-project-123'
@@ -114,6 +114,42 @@ export const mockEventsResponse: PostHogEventsResponse = {
   ],
 }
 
+export const mockAnalyticsData: PostHogData = {
+  stats: {
+    visitors: {
+      value: 1500,
+      change: 15.5,
+    },
+    pageViews: {
+      value: 2500,
+      change: 20.3,
+    },
+  },
+  timeseries: [
+    { date: '2024-01-01', visitors: 100 },
+    { date: '2024-01-02', visitors: 150 },
+    { date: '2024-01-03', visitors: 200 },
+    { date: '2024-01-04', visitors: 250 },
+    { date: '2024-01-05', visitors: 300 },
+    { date: '2024-01-06', visitors: 250 },
+    { date: '2024-01-07', visitors: 250 },
+  ],
+  pages: [
+    { page: '/', visitors: 500, pageViews: 800 },
+    { page: '/about', visitors: 300, pageViews: 450 },
+    { page: '/contact', visitors: 200, pageViews: 250 },
+  ],
+  sources: [
+    { source: 'google.com', visitors: 600 },
+    { source: 'Direct', visitors: 400 },
+  ],
+  events: [
+    { event: 'button_click', count: 450, uniqueUsers: 120 },
+    { event: 'form_submit', count: 230, uniqueUsers: 85 },
+    { event: 'video_play', count: 180, uniqueUsers: 65 },
+  ],
+}
+
 export const handlers = [
   http.post(`${API_HOST}/api/projects/${PROJECT_ID}/insights/trend/`, async ({ request }) => {
     const body = await request.json() as any
@@ -131,5 +167,23 @@ export const handlers = [
 
   http.get(`${API_HOST}/api/projects/${PROJECT_ID}/events/`, () => {
     return HttpResponse.json(mockEventsResponse)
+  }),
+
+  http.get('/api/analytics/data', ({ request }) => {
+    const url = new URL(request.url)
+    const period = url.searchParams.get('period')
+
+    // Simulate different data for different periods
+    if (period === '30d') {
+      return HttpResponse.json({
+        ...mockAnalyticsData,
+        stats: {
+          visitors: { value: 4500, change: 12.3 },
+          pageViews: { value: 7500, change: 18.7 },
+        },
+      })
+    }
+
+    return HttpResponse.json(mockAnalyticsData)
   }),
 ]
