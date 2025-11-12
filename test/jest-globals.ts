@@ -16,6 +16,13 @@ class BroadcastChannel extends EventEmitter {
   }
 }
 
+// Mock ResizeObserver for Recharts
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 // Polyfill Web APIs before anything else loads
 Object.assign(global, {
   fetch,
@@ -28,4 +35,5 @@ Object.assign(global, {
   WritableStream,
   TransformStream,
   BroadcastChannel,
+  ResizeObserver,
 })

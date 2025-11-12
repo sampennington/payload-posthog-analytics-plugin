@@ -1,13 +1,13 @@
 import {
   createPostHogClient,
-} from '../posthog-api-client'
-import type { PostHogConfig } from '../posthog.types'
+} from './posthog-api-client'
+import type { PostHogConfig } from './posthog.types'
 import {
   mockTrendResponse,
   mockTopPagesResponse,
   mockTrafficSourcesResponse,
   mockEventsResponse,
-} from './mocks/posthog-data'
+} from '../test/mocks/posthog-data'
 
 const testConfig: PostHogConfig = {
   apiKey: 'test-api-key',
@@ -20,7 +20,7 @@ const testDateRange = {
   dateTo: '2024-01-07',
 }
 
-const client = createPostHogClient(testConfig)!
+const client = createPostHogClient(testConfig)
 
 describe('PostHog API Client', () => {
   describe('getTrend', () => {

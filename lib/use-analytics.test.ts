@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import { useAnalytics } from '../use-analytics'
-import { mockAnalyticsData } from './mocks/posthog-data'
-import { server } from './mocks/server'
+import { useAnalytics } from './use-analytics'
+import { mockAnalyticsData } from '../test/mocks/posthog-data'
+import { server } from '../test/mocks/server'
 import { http, HttpResponse } from 'msw'
 
 describe('useAnalytics', () => {

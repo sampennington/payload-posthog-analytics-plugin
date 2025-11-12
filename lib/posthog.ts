@@ -29,6 +29,12 @@ export type {
   TimePeriod,
 }
 
+const intervalMap = {
+  day: 'hour',
+  '7d': 'day',
+  '30d': 'day',
+  '12mo': 'month',
+} as const
 
 export async function getPostHogData(period: TimePeriod = '7d'): Promise<PostHogData | null> {
   const client = createPostHogClient()
@@ -39,10 +45,9 @@ export async function getPostHogData(period: TimePeriod = '7d'): Promise<PostHog
 
   const dateRange = getDateRange(period)
   const previousRange = getPreviousPeriodRange(period)
+  const interval = intervalMap[period]
 
   try {
-    const interval = period === 'day' ? 'hour' : period === '12mo' ? 'month' : 'day'
-
     const [
       visitorsData,
       pageViewsData,

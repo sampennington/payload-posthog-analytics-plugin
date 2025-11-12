@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import type { PostHogTrendResponse, PostHogEventsResponse, PostHogData } from '../../posthog.types'
+import type { PostHogTrendResponse, PostHogEventsResponse, PostHogData } from '../../lib/posthog.types'
 
 const API_HOST = 'https://app.posthog.com'
 const PROJECT_ID = 'test-project-123'

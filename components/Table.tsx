@@ -1,3 +1,5 @@
+import React from 'react';
+
 type TableRow = Record<string, unknown>
 
 interface TableColumn<T extends TableRow> {
@@ -21,8 +23,8 @@ export const Table = <T extends TableRow>({ columns, rows, title }: TableProps<T
           <table cellPadding="0" cellSpacing="0">
             <thead>
               <tr>
-                {columns.map((column, idx) => (
-                  <th key={idx}>{column.label}</th>
+                {columns.map((column) => (
+                  <th key={column.label}>{column.label}</th>
                 ))}
               </tr>
             </thead>
