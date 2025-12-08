@@ -3,6 +3,7 @@ import { AnalyticsDashboard } from './AnalyticsDashboard'
 import { DefaultTemplate } from '@payloadcms/next/templates'
 import { Gutter, type StepNavItem, SetStepNav } from '@payloadcms/ui'
 import type { AdminViewServerProps } from 'payload'
+import { getDashboardConfig } from '../index'
 
 export const AnalyticsView: React.FC<AdminViewServerProps> = ({
   initPageResult,
@@ -20,6 +21,8 @@ export const AnalyticsView: React.FC<AdminViewServerProps> = ({
     },
   ]
 
+  const dashboardConfig = getDashboardConfig()
+
   return (
     <DefaultTemplate
       i18n={initPageResult.req.i18n}
@@ -34,7 +37,7 @@ export const AnalyticsView: React.FC<AdminViewServerProps> = ({
       <SetStepNav nav={steps} />
       <Gutter>
         <h1 style={{ margin: '1rem 0 2rem' }}>Analytics Dashboard</h1>
-        <AnalyticsDashboard />
+        <AnalyticsDashboard dashboardConfig={dashboardConfig} />
       </Gutter>
     </DefaultTemplate>
   )

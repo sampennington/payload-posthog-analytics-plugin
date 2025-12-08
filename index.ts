@@ -1,26 +1,15 @@
 import type { AdminViewConfig, Config, Plugin } from 'payload'
 import { analyticsDataEndpoint } from './endpoints/data'
 
-// Inline types to avoid import issues with Node.js ESM
-export interface AnalyticsPluginOptions {
-  enabled?: boolean
-  posthog?: {
-    projectId?: string
-    apiKey?: string
-    apiHost?: string
-  }
-  adminView?: {
-    path?: string
-    label?: string
-    requireAuth?: boolean
-  }
-  reverseProxy?: {
-    enabled?: boolean
-    ingestPath?: string
-  }
-}
+// Re-export all types
+export type {
+  AnalyticsPluginOptions,
+  DashboardConfig,
+  CardConfig,
+  ChartConfig,
+  TableConfig,
+} from './types'
 
-// Re-export types from lib (this is a type-only export, so it's safe)
 export type {
   TimePeriodData,
   PageData,
@@ -31,6 +20,24 @@ export type {
   TimePeriod,
 } from './lib/posthog.types'
 
+// Re-export reusable components for custom dashboards
+export { AnalyticsCard } from './components/AnalyticsCard'
+export { Table } from './components/Table'
+export { ChartRenderer } from './components/ChartRenderer'
+export { useAnalytics } from './lib/use-analytics'
+export { formatNumber } from './lib/utils'
+
+import type { AnalyticsPluginOptions } from './types'
+
+// Module-level storage for dashboard config
+let dashboardConfig: AnalyticsPluginOptions['dashboard'] | undefined
+
+/**
+ * Get the current dashboard configuration
+ * This is used by the AnalyticsDashboard component
+ */
+export const getDashboardConfig = () => dashboardConfig
+
 /**
  * PostHog Analytics Plugin for Payload CMS
  *
@@ -38,7 +45,7 @@ export type {
  *
  * @example
  * ```ts
- * import { analyticsPlugin } from '@/plugins/analytics'
+ * import { analyticsPlugin } from 'payload-posthog-analytics'
  *
  * export default buildConfig({
  *   plugins: [
@@ -46,6 +53,21 @@ export type {
  *       adminView: {
  *         path: '/analytics',
  *         label: 'Analytics',
+ *       },
+ *       dashboard: {
+ *         cards: [
+ *           { key: 'visitors', title: 'Unique Visitors' },
+ *           { key: 'pageViews', title: 'Page Views' },
+ *         ],
+ *         charts: [
+ *           {
+ *             id: 'visitors-chart',
+ *             title: 'Visitor Trends',
+ *             type: 'area',
+ *             dataKey: 'visitors',
+ *             color: '#10b981',
+ *           },
+ *         ],
  *       },
  *     }),
  *   ],
@@ -56,7 +78,7 @@ export const analyticsPlugin = (
   pluginOptions: AnalyticsPluginOptions = {},
 ): Plugin => {
   return (incomingConfig: Config): Config => {
-    const options: Required<AnalyticsPluginOptions> = {
+    const options: Required<Omit<AnalyticsPluginOptions, 'dashboard'>> & Pick<AnalyticsPluginOptions, 'dashboard'> = {
       enabled: pluginOptions.enabled ?? true,
       posthog: pluginOptions.posthog ?? {},
       adminView: {
@@ -68,11 +90,15 @@ export const analyticsPlugin = (
         enabled: pluginOptions.reverseProxy?.enabled ?? true,
         ingestPath: pluginOptions.reverseProxy?.ingestPath ?? '/ingest',
       },
+      dashboard: pluginOptions.dashboard,
     }
 
     if (!options.enabled) {
       return incomingConfig
     }
+
+    // Store dashboard config for access by client components
+    dashboardConfig = options.dashboard
 
     const config = { ...incomingConfig }
 

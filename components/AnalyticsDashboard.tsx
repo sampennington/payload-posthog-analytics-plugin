@@ -1,33 +1,181 @@
 'use client'
 
 import React, { useState } from 'react'
-import {
-  type PageData,
-  type SourceData,
-  type EventData,
-  TimePeriod,
-} from '../lib/posthog.types'
+import { TimePeriod, type PostHogData, type StatsData } from '../lib/posthog.types'
 import { SelectInput } from '@payloadcms/ui'
 import { AnalyticsCard } from './AnalyticsCard'
 import { Table } from './Table'
-import {
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Area,
-  AreaChart,
-} from 'recharts'
-import { formatAxisDate, formatTooltipDate } from './utils'
+import { ChartRenderer } from './ChartRenderer'
 import { formatNumber } from '../lib/utils'
 import { useAnalytics } from '../lib/use-analytics'
+import type { CardConfig, ChartConfig, TableConfig, DashboardConfig } from '../types'
 
+export interface AnalyticsDashboardProps {
+  dashboardConfig?: DashboardConfig
+}
 
-export const AnalyticsDashboard: React.FC = () => {
+const defaultCards: CardConfig[] = [
+  { key: 'visitors', title: 'Visitors', formatter: formatNumber, positiveIsGood: true },
+  { key: 'pageViews', title: 'Page Views', formatter: formatNumber, positiveIsGood: true },
+]
+
+const defaultCharts: ChartConfig[] = [
+  {
+    id: 'visitors-over-time',
+    title: 'Visitors Over Time',
+    type: 'area',
+    dataKey: 'visitors',
+    color: '#10b981',
+    gradient: true,
+    height: 250,
+    formatter: formatNumber,
+  },
+]
+
+const defaultTables: TableConfig[] = [
+  {
+    id: 'top-pages',
+    title: 'Top Pages',
+    dataKey: 'pages',
+    columns: [
+      { key: 'page', label: 'Page' },
+      { key: 'visitors', label: 'Visitors', formatter: formatNumber },
+      { key: 'pageViews', label: 'Pageviews', formatter: formatNumber },
+    ],
+  },
+  {
+    id: 'top-sources',
+    title: 'Top Sources',
+    dataKey: 'sources',
+    columns: [
+      { key: 'source', label: 'Source' },
+      { key: 'visitors', label: 'Visitors', formatter: formatNumber },
+    ],
+  },
+  {
+    id: 'custom-events',
+    title: 'Custom Events',
+    dataKey: 'events',
+    columns: [
+      { key: 'event', label: 'Event' },
+      { key: 'uniqueUsers', label: 'Unique Users', formatter: formatNumber },
+      { key: 'count', label: 'Total Events', formatter: formatNumber },
+    ],
+  },
+]
+
+interface SectionProps {
+  data: PostHogData
+  period: TimePeriod
+  dashboardConfig?: DashboardConfig
+}
+
+const CardsSection: React.FC<SectionProps> = ({ data, period, dashboardConfig }) => {
+  const cardsConfig = dashboardConfig?.cards ?? defaultCards
+
+  if (dashboardConfig?.renderCards) {
+    return <>{dashboardConfig.renderCards(data, period)}</>
+  }
+
+  if (cardsConfig.length === 0) return null
+
+  return (
+    <div className="dashboard__group">
+      <h2 className="dashboard__label">Overview</h2>
+      <ul className="dashboard__card-list" style={{ marginBottom: '2rem' }}>
+        {cardsConfig.map((cardConfig) => {
+          const statValue = (data.stats as any)[cardConfig.key]
+          if (!statValue) return null
+
+          return (
+            <AnalyticsCard
+              key={cardConfig.key}
+              title={cardConfig.title}
+              value={statValue.value}
+              change={statValue.change}
+              formatter={cardConfig.formatter}
+              positiveIsGood={cardConfig.positiveIsGood}
+            />
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+const ChartsSection: React.FC<SectionProps> = ({ data, period, dashboardConfig }) => {
+  const chartsConfig = dashboardConfig?.charts ?? defaultCharts
+
+  if (dashboardConfig?.renderCharts) {
+    return <>{dashboardConfig.renderCharts(data, period)}</>
+  }
+
+  if (chartsConfig.length === 0) return null
+
+  return (
+    <>
+      {chartsConfig.map((chartConfig) => (
+        <ChartRenderer
+          key={chartConfig.id}
+          config={chartConfig}
+          data={data.timeseries}
+          period={period}
+        />
+      ))}
+    </>
+  )
+}
+
+const TablesSection: React.FC<SectionProps> = ({ data, period, dashboardConfig }) => {
+  const tablesConfig = dashboardConfig?.tables ?? defaultTables
+
+  if (dashboardConfig?.renderTables) {
+    return <>{dashboardConfig.renderTables(data, period)}</>
+  }
+
+  if (tablesConfig.length === 0) return null
+
+  return (
+    <div className="dashboard__group">
+      {tablesConfig.map((tableConfig) => {
+        const tableData = data[tableConfig.dataKey]
+        if (!tableData || tableData.length === 0) return null
+
+        return (
+          <Table<any>
+            key={tableConfig.id}
+            title={tableConfig.title}
+            columns={tableConfig.columns}
+            rows={tableData}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+interface CustomSectionsProps {
+  position: 'top' | 'afterCards' | 'afterCharts' | 'bottom'
+  data: PostHogData
+  period: TimePeriod
+  dashboardConfig?: DashboardConfig
+}
+
+const CustomSections: React.FC<CustomSectionsProps> = ({ position, data, period, dashboardConfig }) => {
+  const sections = dashboardConfig?.customSections?.filter((section) => section.position === position) ?? []
+
+  return (
+    <>
+      {sections.map((section, index) => (
+        <section.Component key={`${position}-${index}`} data={data} period={period} />
+      ))}
+    </>
+  )
+}
+
+export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ dashboardConfig }) => {
   const [period, setPeriod] = useState<TimePeriod>('7d')
-
-  const {loading, data, error } = useAnalytics({ period })
+  const { loading, data, error } = useAnalytics({ period })
 
   if (loading) {
     return <div>Loading analytics...</div>
@@ -36,8 +184,6 @@ export const AnalyticsDashboard: React.FC = () => {
   if (error || !data) {
     return <div>{error || 'Unable to load analytics data'}</div>
   }
-
-  const { stats, timeseries, pages, sources, events } = data
 
   const options = [
     { value: 'day', label: 'Last 24 hours' },
@@ -55,127 +201,17 @@ export const AnalyticsDashboard: React.FC = () => {
           label={'Time Period:'}
           options={options}
           value={period}
-          onChange={(option) => !Array.isArray(option) && setPeriod((option).value as TimePeriod)}
+          onChange={(option) => !Array.isArray(option) && setPeriod(option.value as TimePeriod)}
         />
       </div>
-      <div className="dashboard__group">
-        <h2 className="dashboard__label">Overview</h2>
-        <ul className="dashboard__card-list" style={{ marginBottom: '2rem' }}>
-          <AnalyticsCard
-            title={'Visitors'}
-            value={stats.visitors.value}
-            change={stats.visitors.change}
-            formatter={formatNumber}
-            positiveIsGood={true}
-          />
-          <AnalyticsCard
-            title={'Page Views'}
-            value={stats.pageViews.value}
-            change={stats.pageViews.change}
-            formatter={formatNumber}
-            positiveIsGood={true}
-          />
-        </ul>
-      </div>
 
-      <div className="dashboard__group" style={{ margin: '0 0 2rem' }}>
-        <h3 style={{ marginBottom: '2rem' }}>Visitors Over Time</h3>
-        {timeseries.length > 0 ? (
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={timeseries} margin={{ top: 0, right: 0, left: -40, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="5 5" stroke="var(--theme-elevation-200)" />
-              <XAxis
-                dataKey="date"
-                tickFormatter={(value, index) =>
-                  formatAxisDate(value, period, index, timeseries.length)
-                }
-                tick={{ fill: 'var(--theme-elevation-600)' }}
-                stroke="var(--theme-elevation-500)"
-                style={{ fontSize: '0.75rem' }}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                stroke="var(--theme-elevation-500)"
-                style={{ fontSize: '0.75rem' }}
-                tick={{ fill: 'var(--theme-elevation-600)' }}
-                tickFormatter={formatNumber}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'var(--theme-elevation-50)',
-                  border: '1px solid var(--theme-elevation-150)',
-                  borderRadius: '4px',
-                  color: 'var(--theme-text-dark)',
-                  padding: '8px 12px',
-                  fontSize: '0.875rem',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                }}
-                labelStyle={{
-                  color: 'var(--theme-text-light)',
-                  marginBottom: '4px',
-                }}
-                itemStyle={{
-                  color: 'var(--theme-text-dark)',
-                }}
-                labelFormatter={(value) => formatTooltipDate(value, period)}
-                formatter={(value: number) => [`${formatNumber(value)} visitors`]}
-                separator=""
-              />
-              <Area
-                type="monotone"
-                dataKey="visitors"
-                stroke="#10b981"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorVisitors)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        ) : (
-          <p>No data available for this period</p>
-        )}
-      </div>
-
-      <div className="dashboard__group">
-        {pages.length > 0 && (
-          <Table<PageData>
-            title="Top Pages"
-            columns={[
-              { key: 'page', label: 'Page' },
-              { key: 'visitors', label: 'Visitors', formatter: formatNumber },
-              { key: 'pageViews', label: 'Pageviews', formatter: formatNumber },
-            ]}
-            rows={pages}
-          />
-        )}
-        {sources.length > 0 && (
-          <Table<SourceData>
-            title="Top Sources"
-            columns={[
-              { key: 'source', label: 'Source' },
-              { key: 'visitors', label: 'Visitors', formatter: formatNumber },
-            ]}
-            rows={sources}
-          />
-        )}
-        {events && events.length > 0 && (
-          <Table<EventData>
-            title="Custom Events"
-            columns={[
-              { key: 'event', label: 'Event' },
-              { key: 'uniqueUsers', label: 'Unique Users', formatter: formatNumber },
-              { key: 'count', label: 'Total Events', formatter: formatNumber },
-            ]}
-            rows={events}
-          />
-        )}
-      </div>
+      <CustomSections position="top" data={data} period={period} dashboardConfig={dashboardConfig} />
+      <CardsSection data={data} period={period} dashboardConfig={dashboardConfig} />
+      <CustomSections position="afterCards" data={data} period={period} dashboardConfig={dashboardConfig} />
+      <ChartsSection data={data} period={period} dashboardConfig={dashboardConfig} />
+      <CustomSections position="afterCharts" data={data} period={period} dashboardConfig={dashboardConfig} />
+      <TablesSection data={data} period={period} dashboardConfig={dashboardConfig} />
+      <CustomSections position="bottom" data={data} period={period} dashboardConfig={dashboardConfig} />
     </div>
   )
 }
