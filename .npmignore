@@ -16,3 +16,8 @@ jest.config.*
 !README.md
 pnpm-lock.yaml
 .npmignore
+
+# Source files (we ship compiled dist/)
+**/*.ts
+**/*.tsx
+!dist/**/*.d.ts
