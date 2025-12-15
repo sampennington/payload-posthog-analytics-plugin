@@ -1,23 +1,26 @@
-# payload-posthog-analytics
+# 📊 payload-posthog-analytics
 
-A simple (for now!) analytics dashboard plugin for Payload CMS with PostHog integration. Adds an analytics view to your Payload admin panel with visitor stats, page views, traffic sources, and custom events.
+An analytics dashboard plugin for Payload CMS with PostHog integration. Adds an analytics view to your Payload admin panel with visitor stats, page views, traffic sources, and custom events.
 
-## Features
+[![npm version](https://img.shields.io/npm/v/payload-posthog-analytics)](https://www.npmjs.com/package/payload-posthog-analytics)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- **Analytics Dashboard**: Beautiful admin view with charts and tables
-- **PostHog Integration**: Fetch data from PostHog API
-- **Reverse Proxy Support**: Bypass ad blockers by proxying PostHog requests
-- **Time Period Selection**: View data for last 24 hours, 7 days, 30 days, or 12 months
-- **Metrics Tracking**:
-  - Unique visitors (Daily Active Users)
-  - Page views
-  - Top pages
-  - Traffic sources
-  - Custom events
-- **Visual Charts**: Line charts showing visitor trends over time
-- **Data Tables**: Sortable tables for pages, sources, and events
+## ✨ Features
 
-## Installation
+- 📈 **Analytics Dashboard**: Admin view with charts and tables
+- 🔌 **PostHog Integration**: Fetch data from PostHog API
+- 🛡️ **Reverse Proxy Support**: Bypass ad blockers by proxying PostHog requests
+- ⏰ **Time Period Selection**: View data for last 24 hours, 7 days, 30 days, or 12 months
+- 📊 **Metrics Tracking**:
+  - 👥 Unique visitors (Daily Active Users)
+  - 👀 Page views
+  - 🏆 Top pages
+  - 🌐 Traffic sources
+  - 🎯 Custom events
+- 📉 **Visual Charts**: Line charts showing visitor trends over time
+- 🗂️ **Data Tables**: Sortable tables for pages, sources, and events
+
+## 📦 Installation
 
 ```bash
 npm install payload-posthog-analytics
@@ -27,9 +30,9 @@ pnpm add payload-posthog-analytics
 yarn add payload-posthog-analytics
 ```
 
-## Setup
+## 🛠️ Setup
 
-### 1. Configure Environment Variables
+### 1️⃣ Configure Environment Variables
 
 Add these variables to your `.env` file:
 
@@ -39,9 +42,9 @@ POSTHOG_API_KEY=your_personal_api_key
 POSTHOG_API_HOST=https://app.posthog.com  # Optional, defaults to this value
 ```
 
-**Note:** You need a PostHog **Personal API Key** (not the public token) to fetch analytics data. Get it from PostHog Settings → Personal API Keys.
+**⚠️ Important:** You need a PostHog **Personal API Key** (not the public token) to fetch analytics data. Get it from PostHog Settings → Personal API Keys.
 
-### 2. Add Plugin to Payload Config
+### 2️⃣ Add Plugin to Payload Config
 
 In your `payload.config.ts`:
 
@@ -61,7 +64,7 @@ export default buildConfig({
 })
 ```
 
-### 3. Configure Next.js Rewrites (Optional but Recommended)
+### 3️⃣ Configure Next.js Rewrites (Optional but Recommended)
 
 To bypass ad blockers, add the reverse proxy to your `next.config.js`:
 
@@ -77,7 +80,7 @@ const nextConfig = {
 export default nextConfig
 ```
 
-### 4. Regenerate Import Map
+### 4️⃣ Regenerate Import Map
 
 After adding the plugin, regenerate your Payload import map:
 
@@ -85,11 +88,11 @@ After adding the plugin, regenerate your Payload import map:
 pnpm payload generate:importmap
 ```
 
-## Usage
+## 🎯 Usage
 
 Once configured, navigate to `/admin/analytics` in your Payload admin panel to view your analytics dashboard.
 
-## Plugin Options
+## ⚙️ Plugin Options
 
 ```typescript
 interface AnalyticsPluginOptions {
@@ -114,7 +117,7 @@ interface AnalyticsPluginOptions {
 }
 ```
 
-### Example with Custom Options
+### 💡 Example with Custom Options
 
 ```typescript
 analyticsPlugin({
@@ -134,7 +137,7 @@ analyticsPlugin({
 })
 ```
 
-## API
+## 🔌 API
 
 The plugin automatically adds a REST endpoint to your Payload app:
 
@@ -161,7 +164,7 @@ GET /api/analytics/data?period=7d
 }
 ```
 
-## TypeScript
+## 📘 TypeScript
 
 This package includes TypeScript definitions. Import types like this:
 
@@ -173,27 +176,31 @@ import type {
 } from 'payload-posthog-analytics'
 ```
 
-## Requirements
+## 📋 Requirements
 
-- Payload CMS ^3.0.0
-- React ^18.0.0 or ^19.0.0
-- PostHog account with Personal API Key
+- ✅ Payload CMS ^3.0.0
+- ⚛️ React ^18.0.0 or ^19.0.0
+- 📊 PostHog account with Personal API Key
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
-### Analytics not showing
-- Verify your `POSTHOG_API_KEY` and `POSTHOG_PROJECT_ID` are correct
-- Check browser console for errors
-- Ensure you're using a **Personal API Key**, not the public project key
+### 🚫 Analytics not showing
+- ✓ Verify your `POSTHOG_API_KEY` and `POSTHOG_PROJECT_ID` are correct
+- ✓ Check browser console for errors
+- ✓ Ensure you're using a **Personal API Key**, not the public project key
 
-### Ad blockers blocking requests
-- Make sure you've configured the reverse proxy in `next.config.js`
-- Test with ad blocker disabled to confirm
+### 🛡️ Ad blockers blocking requests
+- ✓ Make sure you've configured the reverse proxy in `next.config.js`
+- ✓ Test with ad blocker disabled to confirm
 
-### Import errors
-- Run `pnpm payload generate:importmap` after installation
-- Restart your dev server
+### 📦 Import errors
+- ✓ Run `pnpm payload generate:importmap` after installation
+- ✓ Restart your dev server
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please open an issue or pull request.
+Contributions are welcome. Please open an issue or pull request.
+
+## 📄 License
+
+MIT

@@ -109,7 +109,7 @@ export const analyticsPlugin = (
         views: {
           ...config.admin?.components?.views,
           [(options.adminView.label || "").toLowerCase()]: {
-            Component: '@/plugins/analytics/components/AnalyticsView#AnalyticsView',
+            Component: 'payload-posthog-analytics/components/AnalyticsView#AnalyticsView',
             path: options.adminView.path,
           } as AdminViewConfig,
         },
