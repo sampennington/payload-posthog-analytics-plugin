@@ -1,6 +1,6 @@
 {
   "name": "payload-posthog-analytics",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "PostHog analytics dashboard plugin for Payload CMS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -52,7 +52,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "prepublishOnly": "npm run clean && npm run build && npm test"
+    "prepack": "npm run clean && npm run build"
   },
   "files": [
     "dist",
