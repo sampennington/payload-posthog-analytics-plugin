@@ -5,7 +5,6 @@ An analytics dashboard plugin for Payload CMS with PostHog integration. Adds an 
 [![npm version](https://img.shields.io/npm/v/payload-posthog-analytics)](https://www.npmjs.com/package/payload-posthog-analytics)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![Analytics Dashboard Preview](preview.png)
 
 ## ✨ Features
 
@@ -21,6 +20,11 @@ An analytics dashboard plugin for Payload CMS with PostHog integration. Adds an 
   - 🎯 Custom events
 - 📉 **Visual Charts**: Line charts showing visitor trends over time
 - 🗂️ **Data Tables**: Sortable tables for pages, sources, and events
+
+## 🔍 Preview
+
+![Analytics Dashboard Preview](./preview.png)
+
 
 ## 📦 Installation
 
