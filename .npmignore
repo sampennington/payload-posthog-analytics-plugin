@@ -8,3 +8,11 @@ tsconfig.json
 *.test.tsx
 *.spec.ts
 *.spec.tsx
+test/
+coverage/
+.gitignore
+jest.config.*
+*.md
+!README.md
+pnpm-lock.yaml
+.npmignore

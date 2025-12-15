@@ -12,16 +12,20 @@
     "analytics",
     "dashboard"
   ],
-  "author": "Your Name samueljpennington64@gmail.com",
+  "author": "Sam Pennington <samueljpennington64@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/payload-posthog-analytics"
+    "url": "https://github.com/sampennington/payload-posthog-analytics-plugin.git"
   },
+  "bugs": {
+    "url": "https://github.com/sampennington/payload-posthog-analytics-plugin/issues"
+  },
+  "homepage": "https://github.com/sampennington/payload-posthog-analytics-plugin#readme",
   "peerDependencies": {
-    "payload": "^3.0.0",
     "@payloadcms/next": "^3.0.0",
     "@payloadcms/ui": "^3.0.0",
+    "payload": "^3.0.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
@@ -29,6 +33,7 @@
     "recharts": "^3.3.0"
   },
   "devDependencies": {
+    "@jest/globals": "^30.2.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^30.0.0",
@@ -44,12 +49,19 @@
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm test"
   },
   "files": [
     "**/*.ts",
     "**/*.tsx",
-    "README.md"
+    "!**/*.test.ts",
+    "!**/*.test.tsx",
+    "!**/*.spec.ts",
+    "!**/*.spec.tsx",
+    "!test/**",
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18.0.0"
