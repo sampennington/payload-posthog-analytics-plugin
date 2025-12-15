@@ -5,6 +5,8 @@ An analytics dashboard plugin for Payload CMS with PostHog integration. Adds an 
 [![npm version](https://img.shields.io/npm/v/payload-posthog-analytics)](https://www.npmjs.com/package/payload-posthog-analytics)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+![Analytics Dashboard Preview](preview.png)
+
 ## ✨ Features
 
 - 📈 **Analytics Dashboard**: Admin view with charts and tables
