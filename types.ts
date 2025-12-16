@@ -114,7 +114,7 @@ export interface DashboardConfig {
   tables?: TableConfig[]
 
   /**
-   * Custom render functions to replace entire sections
+   * Custom render functions to completely replace entire sections
    */
   renderCards?: (data: PostHogData, period: TimePeriod) => React.ReactNode
   renderCharts?: (data: PostHogData, period: TimePeriod) => React.ReactNode
