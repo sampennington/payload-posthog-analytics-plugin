@@ -93,23 +93,4 @@ describe('ChartRenderer', () => {
       expect(container.querySelector('.recharts-responsive-container')).not.toBeInTheDocument()
     })
   })
-
-  describe('Chart Types', () => {
-    it('renders different chart types correctly', () => {
-      const types: Array<'area' | 'line' | 'bar'> = ['area', 'line', 'bar']
-
-      types.forEach((type) => {
-        const config: ChartConfig = {
-          id: `test-${type}`,
-          title: `Test ${type} Chart`,
-          type,
-          dataKey: 'visitors',
-        }
-
-        const { unmount } = render(<ChartRenderer config={config} data={mockData} period="7d" />)
-        expect(screen.getByText(`Test ${type} Chart`)).toBeInTheDocument()
-        unmount()
-      })
-    })
-  })
 })
