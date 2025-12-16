@@ -67,8 +67,7 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE",
-    "preview.png"
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18.0.0"
