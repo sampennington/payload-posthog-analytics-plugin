@@ -48,7 +48,6 @@ describe('PostHog API Client', () => {
 
       const result = await client.getTrend(query)
 
-      expect(result).toBeDefined()
       expect(result).toEqual(mockTopPagesResponse)
     })
   })
