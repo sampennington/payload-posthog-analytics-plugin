@@ -4,7 +4,7 @@ import type {
   TrendQuery,
   PostHogTrendResponse,
   PostHogEventsResponse,
-} from './posthog.types'
+} from '../posthog.types'
 
 export function createPostHogConfig(): PostHogConfig {
   const apiKey = process.env.POSTHOG_API_KEY

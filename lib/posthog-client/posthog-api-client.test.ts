@@ -1,13 +1,13 @@
 import {
   createPostHogClient,
 } from './posthog-api-client'
-import type { PostHogConfig } from './posthog.types'
+import type { PostHogConfig } from '../posthog.types'
 import {
   mockTrendResponse,
   mockTopPagesResponse,
   mockTrafficSourcesResponse,
   mockEventsResponse,
-} from '../test/mocks/posthog-data'
+} from '../../test/mocks/posthog-data'
 
 const testConfig: PostHogConfig = {
   apiKey: 'test-api-key',

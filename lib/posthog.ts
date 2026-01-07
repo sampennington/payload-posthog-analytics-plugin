@@ -1,4 +1,4 @@
-import { createPostHogClient } from './posthog-api-client'
+import { createPostHogClient } from './posthog-client/posthog-api-client'
 import type {
   TimePeriodData,
   PageData,

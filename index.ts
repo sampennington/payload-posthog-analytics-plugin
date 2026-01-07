@@ -80,7 +80,6 @@ export const analyticsPlugin = (
   return (incomingConfig: Config): Config => {
     const options: Required<Omit<AnalyticsPluginOptions, 'dashboard'>> & Pick<AnalyticsPluginOptions, 'dashboard'> = {
       enabled: pluginOptions.enabled ?? true,
-      posthog: pluginOptions.posthog ?? {},
       adminView: {
         path: pluginOptions.adminView?.path ?? '/analytics',
         label: pluginOptions.adminView?.label ?? 'Analytics',

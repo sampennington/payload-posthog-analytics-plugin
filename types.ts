@@ -137,19 +137,6 @@ export interface AnalyticsPluginOptions {
   enabled?: boolean
 
   /**
-   * PostHog configuration
-   * If not provided, will read from environment variables:
-   * - POSTHOG_PROJECT_ID
-   * - POSTHOG_API_KEY
-   * - POSTHOG_API_HOST (optional, defaults to https://app.posthog.com)
-   */
-  posthog?: {
-    projectId?: string
-    apiKey?: string
-    apiHost?: string
-  }
-
-  /**
    * Admin view configuration
    */
   adminView?: {

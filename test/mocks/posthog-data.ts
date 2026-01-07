@@ -173,7 +173,6 @@ export const handlers = [
     const url = new URL(request.url)
     const period = url.searchParams.get('period')
 
-    // Simulate different data for different periods
     if (period === '30d') {
       return HttpResponse.json({
         ...mockAnalyticsData,

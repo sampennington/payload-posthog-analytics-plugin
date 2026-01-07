@@ -1,6 +1,6 @@
 {
   "name": "payload-posthog-analytics",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "PostHog analytics dashboard plugin for Payload CMS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

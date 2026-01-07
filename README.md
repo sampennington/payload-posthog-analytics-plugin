@@ -104,12 +104,6 @@ Once configured, navigate to `/admin/analytics` in your Payload admin panel to v
 interface AnalyticsPluginOptions {
   enabled?: boolean // Enable/disable plugin (default: true)
 
-  posthog?: {
-    projectId?: string
-    apiKey?: string
-    apiHost?: string // Default: https://app.posthog.com
-  }
-
   adminView?: {
     path?: string        // Default: /analytics
     label?: string       // Default: Analytics
@@ -128,11 +122,6 @@ interface AnalyticsPluginOptions {
 ```typescript
 analyticsPlugin({
   enabled: process.env.NODE_ENV === 'production',
-  posthog: {
-    projectId: process.env.POSTHOG_PROJECT_ID,
-    apiKey: process.env.POSTHOG_API_KEY,
-    apiHost: 'https://eu.posthog.com', // EU region
-  },
   adminView: {
     path: '/dashboard/analytics',
     label: 'Site Analytics',
